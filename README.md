@@ -10,6 +10,4 @@ At Bush Terminal Piers in Brooklyn, we are scaling this concept from the clinic 
    \---/     ~~~~~      /   \     ~~~~~    \---/     ~~~~~  /   \     ~~~~~  
 ~~~~~ ~~~~~ ~~~~~ ~~~~~ ~~~~~ ~~~~~ ~~~~~ ~~~~~ ~~~~~ ~~~~~ ~~~~~ ~~~~~ ~~~~~
 ```
-Science by Microbial Reef, GenSpace NYC. 
-
-Code by Gemini+Sol on a Pi harness.
+Experiments by Microbial Reef, GenSpace NYC. Code by Gemini+Sol on a Pi harness.
