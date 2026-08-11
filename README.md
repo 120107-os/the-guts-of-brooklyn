@@ -1,3 +1,5 @@
+# The Guts of Brooklyn
+
 Viruses are the most abundant biological machines on Earth. Their primary function is simple: they copy and paste their genetic code into the cells of other living organisms.
 
 Because of this constant interaction, the viral footprint left behind inside a host acts as a direct diagnostic ledger of its immune health and stress. In medicine, we already use this exact principle to measure human gut health through microbiome sequencing.
