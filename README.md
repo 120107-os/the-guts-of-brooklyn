@@ -3,3 +3,6 @@ Viruses are the most abundant biological machines on Earth. Their primary functi
 Because of this constant interaction, the viral footprint left behind inside a host acts as a direct diagnostic ledger of its immune health and stress. In medicine, we already use this exact principle to measure human gut health through microbiome sequencing.
 
 At Bush Terminal Piers in Brooklyn, we are scaling this concept from the clinic to the city. By extracting and sequencing the millions of invisible viruses suspended in the tidal water—the metagenome—we are no longer just looking at a single patient. We are reading the collective immune system of the entire urban ecosystem.
+
+> Microbial Reef Group, GenSpace NYC
+> OpenAI Sol / Google Gemini
