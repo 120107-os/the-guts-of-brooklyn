@@ -1,9 +1,5 @@
-Viruses make up the majority of the world's ecosystem.
+Viruses are the most abundant biological machines on Earth. Their primary function is simple: they copy and paste their genetic code into the cells of other living organisms.
 
-They are tiny machines which copy and paste their DNA into bacteria and higher organisms. 
+Because of this constant interaction, the viral footprint left behind inside a host acts as a direct diagnostic ledger of its immune health and stress. In medicine, we already use this exact principle to measure human gut health through microbiome sequencing.
 
-The viruses found inside the genome of an organism can be used as an indicator of immune health.
-
-This is medically used to measure gut health in humans (microbiome research).
-
-Here, we use the viruses found in the river water of Bush Terminal Piers (the "metagenome") to check the immunity of the local community.
+At Bush Terminal Piers in Brooklyn, we are scaling this concept from the clinic to the city. By extracting and sequencing the millions of invisible viruses suspended in the tidal water—the metagenome—we are no longer just looking at a single patient. We are reading the collective immune system of the entire urban ecosystem.
