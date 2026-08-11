@@ -4,4 +4,5 @@ Because of this constant interaction, the viral footprint left behind inside a h
 
 At Bush Terminal Piers in Brooklyn, we are scaling this concept from the clinic to the city. By extracting and sequencing the millions of invisible viruses suspended in the tidal water—the metagenome—we are no longer just looking at a single patient. We are reading the collective immune system of the entire urban ecosystem.
 
-- Microbial Reef, GenSpace NYC <> OpenAI, Google
+Experiments performed by Microbial Reef, GenSpace NYC
+Vibecoded with OpenAI (Sol), Google (Gemini) on Pi Harness
