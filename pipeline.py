@@ -33,9 +33,7 @@ image = (
         "accelerate==0.31.0",
     )
 )
-
-
-@app.function(image=image, volumes={"/data": volume})
+@app.function(image=image, timeout=1800, volumes={"/data": volume})
 def inventory():
     """Return real FASTA records and completed monomer IDs."""
     import os
@@ -52,12 +50,10 @@ def inventory():
             "length": len(sequence),
             "bin": raw_bin.replace("scaffoldssta_bin", "scaffolds.fasta_bin"),
         })
-    completed = {
-        name.removesuffix(".pdb")
-        for name in os.listdir(OUTPUT_DIR)
-        if name.endswith(".pdb")
-    } if os.path.isdir(OUTPUT_DIR) else set()
-    return records, sorted(completed)
+    names = os.listdir(OUTPUT_DIR) if os.path.isdir(OUTPUT_DIR) else []
+    pdb_ids = {name.removesuffix(".pdb") for name in names if name.endswith(".pdb")}
+    json_ids = {name.removesuffix(".json") for name in names if name.endswith(".json")}
+    return records, sorted(pdb_ids & json_ids)
 
 
 @app.function(image=image, volumes={"/data": volume})
@@ -71,19 +67,17 @@ def write_artifact(path: str, payload):
     return path
 
 
-@app.function(image=image, volumes={"/data": volume})
+@app.function(image=image, timeout=1800, volumes={"/data": volume})
 def read_plan():
     import json
     import os
     volume.reload()
     with open(PLAN_PATH) as handle:
         plan = json.load(handle)
-    completed = {
-        name.removesuffix(".pdb")
-        for name in os.listdir(OUTPUT_DIR)
-        if name.endswith(".pdb")
-    } if os.path.isdir(OUTPUT_DIR) else set()
-    return plan, sorted(completed)
+    names = os.listdir(OUTPUT_DIR) if os.path.isdir(OUTPUT_DIR) else []
+    pdb_ids = {name.removesuffix(".pdb") for name in names if name.endswith(".pdb")}
+    json_ids = {name.removesuffix(".json") for name in names if name.endswith(".json")}
+    return plan, sorted(pdb_ids & json_ids)
 
 
 @app.cls(
@@ -117,7 +111,12 @@ class MonomerFolder:
         os.makedirs(output_dir, exist_ok=True)
         pdb_path = os.path.join(output_dir, f"{record['id']}.pdb")
         json_path = os.path.join(output_dir, f"{record['id']}.json")
-        if os.path.isfile(pdb_path):
+        complete = False
+        if os.path.isfile(pdb_path) and os.path.isfile(json_path) and os.path.getsize(pdb_path) > 500:
+            with open(pdb_path, "rb") as handle:
+                handle.seek(max(0, os.path.getsize(pdb_path) - 256))
+                complete = b"END" in handle.read()
+        if complete:
             return {"id": record["id"], "status": "existing", "inference_seconds": 0.0,
                     "model_load_seconds": self.load_seconds}
 
@@ -243,9 +242,9 @@ def plan(budget_usd: float = 30.0, sample_size: int = 3):
     print(json.dumps(report, indent=2))
 
 
-@app.local_entrypoint()
-def fold():
-    """Resume and execute only the persisted budgeted monomer plan."""
+@app.function(image=image, timeout=86400, volumes={"/data": volume})
+def fold_cloud():
+    """Cloud coordinator: resume the plan without a connected local process."""
     import json
 
     records, _ = inventory.remote()
@@ -253,11 +252,9 @@ def fold():
     plan_rows, completed = read_plan.remote()
     selected = [by_id[row["id"]] for row in plan_rows if row["id"] not in completed]
     print(f"planned={len(plan_rows)} completed={len(completed)} remaining={len(selected)}")
-    if not selected:
-        return
     outputs = list(MonomerFolder().predict.map(
         selected, kwargs={"output_dir": OUTPUT_DIR}, return_exceptions=True
-    ))
+    )) if selected else []
     failures = [str(row) for row in outputs if isinstance(row, Exception)]
     completed_rows = [row for row in outputs if isinstance(row, dict)]
     summary = {
@@ -267,10 +264,20 @@ def fold():
         "completed_this_run": sum(row["status"] == "completed" for row in completed_rows),
         "failures": failures,
     }
-    write_artifact.remote(SUMMARY_PATH, summary)
+    with open(SUMMARY_PATH, "w") as handle:
+        json.dump(summary, handle, indent=2)
+    volume.commit()
     print(json.dumps(summary, indent=2))
     if failures:
         raise RuntimeError("Some folds failed; rerun to resume")
+    return summary
+
+
+@app.local_entrypoint()
+def fold():
+    """Run in the foreground; use fold_cloud directly with --detach for cloud execution."""
+    import json
+    print(json.dumps(fold_cloud.remote(), indent=2))
 
 
 @app.local_entrypoint()

@@ -2,3 +2,9 @@
 __pycache__/
 *.py[cod]
 .DS_Store
+
+# Local rendering utilities and generated media
+image.py
+metagenome.png
+monomer_traces.json
+*.mp4
